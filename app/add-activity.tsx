@@ -1,11 +1,29 @@
 // app/add-activity.tsx
-import { View, Text } from 'react-native';
-import { styles as rootStyles } from './_layout';  // Note the ./ instead of ../ since we're in the same directory
+import { View, Text, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
+import { styles } from './_layout';
 
 const AddActivity = () => {
+  const router = useRouter();
+
   return (
-    <View style={rootStyles.container}>
-      <Text>Add Activity Screen</Text>
+    <View style={[styles.container, styles.centerContainer]}>
+      <TouchableOpacity 
+        style={styles.addButton}
+        onPress={() => {
+          // Add your activity logic here
+          router.back();
+        }}
+      >
+        <Text style={styles.buttonText}>Add activity</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+        style={styles.backButton}
+        onPress={() => router.back()}
+      >
+        <Text style={styles.buttonText}>Go back</Text>
+      </TouchableOpacity>
     </View>
   );
 };

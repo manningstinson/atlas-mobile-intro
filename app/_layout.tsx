@@ -11,7 +11,8 @@ const RootLayout = () => {
           name="add-activity"
           options={{
             presentation: 'modal',
-            title: 'Add Activity'
+            title: 'Add Activity',
+            headerBackVisible: false,
           }}
         />
       </Stack>
@@ -19,11 +20,44 @@ const RootLayout = () => {
   );
 };
 
-export const styles = StyleSheet.create({  // Added 'export' here
+export const styles = StyleSheet.create({
+  // Base container style
   container: {
     flex: 1,
-    backgroundColor: 'beige', // Beige background color
+    backgroundColor: '#FFF8DC', // Beige background color
   },
+  // Center container style
+  centerContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  // Button styles
+  addButton: {
+    backgroundColor: '#00CED1', // Turquoise color
+    width: '100%',
+    padding: 15,
+    borderRadius: 5,
+  },
+  backButton: {
+    backgroundColor: '#DC143C', // Red color
+    width: '100%',
+    padding: 15,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  buttonText: {
+    color: 'white',
+    textAlign: 'center',
+    fontSize: 16,
+  },
+  // Header styles
+  header: {
+    backgroundColor: '#fff',
+  },
+  tabBar: {
+    backgroundColor: '#fff',
+  }
 });
 
 export default RootLayout;
