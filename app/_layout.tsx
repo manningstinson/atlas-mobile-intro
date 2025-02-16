@@ -34,7 +34,7 @@ export const styles = StyleSheet.create({
   },
   // Button styles
   addButton: {
-    backgroundColor: '#1ED2AF', // Turquoise color
+    backgroundColor: '#00CED1', // Turquoise color
     width: '100%',
     padding: 15,
     borderRadius: 5,
@@ -57,23 +57,7 @@ export const styles = StyleSheet.create({
   },
   tabBar: {
     backgroundColor: '#fff',
-  },
- activityItem: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-  },
-
-  dateText: {
-    fontSize: 14,
-    color: '#888',
-  },
-  stepsText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-
-  
+  }
 });
 
 export default RootLayout;
