@@ -1,22 +1,28 @@
 // app/_layout.tsx
 import { Stack } from 'expo-router';
 import { View, StyleSheet } from 'react-native';
+import DatabaseProvider from '../components/db_provider';
 
 const RootLayout = () => {
   return (
-    <View style={styles.container}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="add-activity"
-          options={{
-            presentation: 'modal',
-            title: 'Add Activity',
-            headerBackVisible: false,
-          }}
-        />
-      </Stack>
-    </View>
+    <DatabaseProvider>
+      <View style={styles.container}>
+        <Stack>
+          <Stack.Screen 
+            name="(tabs)" 
+            options={{ headerShown: false }} 
+          />
+          <Stack.Screen
+            name="add-activity"
+            options={{
+              presentation: 'modal',
+              title: 'Add Activity',
+              headerBackVisible: false,
+            }}
+          />
+        </Stack>
+      </View>
+    </DatabaseProvider>
   );
 };
 
