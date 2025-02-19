@@ -29,25 +29,33 @@ const dbOperations = {
     }
   },
 
-  addActivity = async (steps: number) => {
-  try {
-    const db = await openDatabase();
-    const date = Math.floor(Date.now() / 1000);
-    await db.execAsync(
-      'INSERT INTO activities (steps, date) VALUES (?, ?);',
-      [steps, date]
-    );
-    console.log('Activity added');
-  } catch (error) {
-    console.error('Error adding activity:', error);
-    throw error;
-  }
-},
+  addActivity: async (steps: number) => {
+    try {
+      const db = await openDatabase();
+      const date = Math.floor(Date.now() / 1000);
+      console.log('Attempting to insert:', { steps, date });
+      
+      const query = `INSERT INTO activities (steps, date) VALUES (${steps}, ${date})`;
+      console.log('Executing query:', query);
+      await db.execAsync(query);
+      
+      const result = await db.getAllAsync('SELECT * FROM activities ORDER BY id DESC LIMIT 1;');
+      console.log('Most recent record:', result);
+    } catch (error) {
+      console.error('Error adding activity:', error);
+      throw error;
+    }
+  },
 
   getActivities: async (): Promise<Activity[]> => {
     try {
       const db = await openDatabase();
+      console.log('Executing SELECT query');
       const result = await db.getAllAsync('SELECT * FROM activities ORDER BY date DESC;');
+      console.log('Raw query result:', result);
+      if (result && result.length > 0) {
+        console.log('Sample record:', result[0]);
+      }
       return result as Activity[];
     } catch (error) {
       console.error('Error fetching activities:', error);
@@ -58,11 +66,9 @@ const dbOperations = {
   deleteActivity: async (id: number) => {
     try {
       const db = await openDatabase();
-      const result = await db.execAsync(
-        'DELETE FROM activities WHERE id = ?;',
-        [id]
-      );
-      console.log('Activity deleted');
+      const query = `DELETE FROM activities WHERE id = ${id}`;
+      const result = await db.execAsync(query);
+      console.log('Activity deleted:', id);
       return result;
     } catch (error) {
       console.error('Error deleting activity:', error);
