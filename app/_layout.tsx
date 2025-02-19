@@ -1,7 +1,7 @@
 // app/_layout.tsx
 import { Stack } from 'expo-router';
 import { View, StyleSheet } from 'react-native';
-import DatabaseProvider from '../components/db_provider';
+import DatabaseProvider from '../components/DatabaseProvider';
 
 const RootLayout = () => {
   return (

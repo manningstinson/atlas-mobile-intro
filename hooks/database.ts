@@ -1,9 +1,13 @@
 // hooks/database.ts
-import { openDatabase, SQLTransaction, SQLResultSet } from 'expo-sqlite';
+import * as SQLite from 'expo-sqlite';
 import { useState, useEffect } from 'react';
 
-const db = openDatabase('activities.db');
+// Open the database asynchronously
+async function openDatabase() {
+  return await SQLite.openDatabaseAsync('activities.db');
+}
 
+// Interface for Activity
 export interface Activity {
   id: number;
   steps: number;
@@ -12,88 +16,71 @@ export interface Activity {
 
 // Database operations
 const dbOperations = {
-  init: () => {
-    return new Promise((resolve, reject) => {
-      db.transaction((tx: SQLTransaction) => {
-        tx.executeSql(
-          'CREATE TABLE IF NOT EXISTS activities (id INTEGER PRIMARY KEY AUTOINCREMENT, steps INTEGER, date INTEGER);',
-          [],
-          (_, result: SQLResultSet) => {
-            resolve('Database initialized');
-          },
-          (_, error): boolean => {
-            reject(error);
-            return false;
-          }
-        );
-      });
-    });
+  init: async () => {
+    try {
+      const db = await openDatabase();
+      await db.execAsync(
+        'CREATE TABLE IF NOT EXISTS activities (id INTEGER PRIMARY KEY AUTOINCREMENT, steps INTEGER, date INTEGER);'
+      );
+      console.log('Database initialized');
+    } catch (error) {
+      console.error('Error initializing database:', error);
+      throw error;
+    }
   },
 
-  addActivity: (steps: number) => {
-    return new Promise((resolve, reject) => {
-      const date = Math.floor(Date.now() / 1000);
-      db.transaction((tx: SQLTransaction) => {
-        tx.executeSql(
-          'INSERT INTO activities (steps, date) VALUES (?, ?);',
-          [steps, date],
-          (_, result: SQLResultSet) => resolve(result),
-          (_, error): boolean => {
-            reject(error);
-            return false;
-          }
-        );
-      });
-    });
-  },
-
-  getActivities: () => {
-    return new Promise<Activity[]>((resolve, reject) => {
-      db.transaction((tx: SQLTransaction) => {
-        tx.executeSql(
-          'SELECT * FROM activities ORDER BY date DESC;',
-          [],
-          (_, { rows: { _array } }) => resolve(_array as Activity[]),
-          (_, error): boolean => {
-            reject(error);
-            return false;
-          }
-        );
-      });
-    });
-  },
-
-  deleteActivity: (id: number) => {
-    return new Promise((resolve, reject) => {
-      db.transaction((tx: SQLTransaction) => {
-        tx.executeSql(
-          'DELETE FROM activities WHERE id = ?;',
-          [id],
-          (_, result: SQLResultSet) => resolve(result),
-          (_, error): boolean => {
-            reject(error);
-            return false;
-          }
-        );
-      });
-    });
-  },
-
-  deleteAllActivities: () => {
-    return new Promise((resolve, reject) => {
-      db.transaction((tx: SQLTransaction) => {
-        tx.executeSql(
-          'DELETE FROM activities;',
-          [],
-          (_, result: SQLResultSet) => resolve(result),
-          (_, error): boolean => {
-            reject(error);
-            return false;
-          }
-        );
-      });
-    });
+  addActivity = async (steps: number) => {
+  try {
+    const db = await openDatabase();
+    const date = Math.floor(Date.now() / 1000);
+    await db.execAsync(
+      'INSERT INTO activities (steps, date) VALUES (?, ?);',
+      [steps, date]
+    );
+    console.log('Activity added');
+  } catch (error) {
+    console.error('Error adding activity:', error);
+    throw error;
   }
+},
+
+  getActivities: async (): Promise<Activity[]> => {
+    try {
+      const db = await openDatabase();
+      const result = await db.getAllAsync('SELECT * FROM activities ORDER BY date DESC;');
+      return result as Activity[];
+    } catch (error) {
+      console.error('Error fetching activities:', error);
+      throw error;
+    }
+  },
+
+  deleteActivity: async (id: number) => {
+    try {
+      const db = await openDatabase();
+      const result = await db.execAsync(
+        'DELETE FROM activities WHERE id = ?;',
+        [id]
+      );
+      console.log('Activity deleted');
+      return result;
+    } catch (error) {
+      console.error('Error deleting activity:', error);
+      throw error;
+    }
+  },
+
+  deleteAllActivities: async () => {
+    try {
+      const db = await openDatabase();
+      const result = await db.execAsync('DELETE FROM activities;');
+      console.log('All activities deleted');
+      return result;
+    } catch (error) {
+      console.error('Error deleting all activities:', error);
+      throw error;
+    }
+  },
 };
 
 // Hook for using database operations
@@ -113,6 +100,6 @@ export function useDatabase() {
     addActivity: dbOperations.addActivity,
     getActivities: dbOperations.getActivities,
     deleteActivity: dbOperations.deleteActivity,
-    deleteAllActivities: dbOperations.deleteAllActivities
+    deleteAllActivities: dbOperations.deleteAllActivities,
   };
 }
