@@ -1,32 +1,71 @@
-// components/db_provider.tsx
-import React from 'react';
-import { View, Text } from 'react-native';
-import { useDatabase } from '../hooks/database';
+// hooks/database.ts
+import { openDatabase } from 'expo-sqlite';
+import { useState, useEffect } from 'react';
 
-interface DatabaseProviderProps {
-  children: React.ReactNode;
+export interface Activity {
+  id: number;
+  steps: number;
+  date: number;
 }
 
-export function DatabaseProvider({ children }: DatabaseProviderProps) {
-  const { isInitialized, error } = useDatabase();
+export function useDatabase() {
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  const db = openDatabase('activities.db');
 
-  if (error) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Database Error: {error.message}</Text>
-      </View>
-    );
-  }
+  // Initialize database when the hook is first used
+  useEffect(() => {
+    const initDatabase = () => {
+      try {
+        db.transaction(tx => {
+          tx.executeSql(
+            'CREATE TABLE IF NOT EXISTS activities (id INTEGER PRIMARY KEY AUTOINCREMENT, steps INTEGER, date INTEGER);',
+            [],
+            () => {
+              setIsInitialized(true);
+            },
+            (_, error) => {
+              setError(error);
+              return false;
+            }
+          );
+        });
+      } catch (err) {
+        setError(err as Error);
+      }
+    };
 
-  if (!isInitialized) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Initializing database...</Text>
-      </View>
-    );
-  }
+    initDatabase();
+  }, []);
 
-  return children;
+  const addActivity = async (steps: number) => {
+    try {
+      const date = Math.floor(Date.now() / 1000);
+      return new Promise((resolve, reject) => {
+        db.transaction(tx => {
+          tx.executeSql(
+            'INSERT INTO activities (steps, date) VALUES (?, ?);',
+            [steps, date],
+            (_, result) => resolve(result),
+            (_, error) => {
+              reject(error);
+              return false;
+            }
+          );
+        });
+      });
+    } catch (error) {
+      console.error('Error adding activity:', error);
+      throw error;
+    }
+  };
+
+  return {
+    isInitialized,
+    error,
+    addActivity,
+    // ... other database operations
+  };
 }
 
-export default DatabaseProvider;
+export default useDatabase;
