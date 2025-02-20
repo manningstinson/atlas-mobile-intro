@@ -61,7 +61,7 @@ export const styles = StyleSheet.create({
   },
   // Button styles
   addButton: {
-    backgroundColor: '#00CED1', // Turquoise color
+    backgroundColor: '#1ED2AF', // Turquoise color
     width: '100%',
     padding: 15,
     borderRadius: 5,
