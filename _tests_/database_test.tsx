@@ -1,9 +1,9 @@
 // app/(tabs)/database-test.tsx
 import { View, Text, TouchableOpacity, ScrollView, TextInput } from 'react-native';
-import { useDatabase } from '../../hooks/database';
+import { useDatabase } from '../hooks/database';
 import { useEffect, useState } from 'react';
-import { styles } from '../_layout';
-import { Activity } from '../../hooks/database';
+import { styles } from '../app/_layout';
+import { Activity } from '../hooks/database';
 
 const DatabaseTest = () => {
   const { addActivity, getActivities, deleteAllActivities } = useDatabase();

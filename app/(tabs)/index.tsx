@@ -2,14 +2,14 @@
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { styles } from '../_layout';
-import { useDatabase, Activity } from '../../hooks/database';  // Import Activity type
+import { useDatabase, Activity } from '../../hooks/database';
 import { useEffect, useState } from 'react';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 const Index = () => {
   const router = useRouter();
-  const { getActivities, deleteActivity } = useDatabase();
-  const [activities, setActivities] = useState<Activity[]>([]);  // Add type annotation
+  const { getActivities, deleteActivity, deleteAllActivities } = useDatabase();
+  const [activities, setActivities] = useState<Activity[]>([]);
 
   useEffect(() => {
     loadActivities();
@@ -67,7 +67,7 @@ const Index = () => {
           activities.map((activity) => (
             <Swipeable
               key={activity.id}
-              renderRightActions={(progress, dragX) => 
+              renderRightActions={(progress, dragX) =>
                 renderRightActions(progress, dragX, activity.id)
               }
             >
@@ -88,12 +88,26 @@ const Index = () => {
         )}
       </ScrollView>
 
-      <View style={{ padding: 20 }}>
+      <View style={styles.bottomContainer}>
         <TouchableOpacity
           style={styles.addButton}
           onPress={() => router.push('/add-activity')}
         >
           <Text style={styles.buttonText}>Add activity</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.deleteAllButton}
+          onPress={async () => {
+            try {
+              await deleteAllActivities();
+              await loadActivities();
+            } catch (error) {
+              console.error('Error deleting all activities:', error);
+            }
+          }}
+        >
+          <Text style={styles.buttonText}>Delete all activities</Text>
         </TouchableOpacity>
       </View>
     </View>

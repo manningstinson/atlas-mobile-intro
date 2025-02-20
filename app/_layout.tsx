@@ -80,6 +80,13 @@ export const styles = StyleSheet.create({
     width: 70,
     height: '100%',
   },
+  deleteAllButton: {
+    backgroundColor: '#DC143C', // Red color
+    width: '100%',
+    padding: 15,
+    borderRadius: 5,
+    marginTop: 10,
+  },
   buttonText: {
     color: 'white',
     textAlign: 'center',
@@ -101,6 +108,10 @@ export const styles = StyleSheet.create({
   },
   tabBar: {
     backgroundColor: '#fff',
+  },
+  // Bottom container style
+  bottomContainer: {
+    padding: 20,
   }
 });
 
